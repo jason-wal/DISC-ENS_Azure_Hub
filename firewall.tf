@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "fw_rsg" {
 # Storage account for boot diagnostics
 #
 resource "azurerm_storage_account" "fw1" {
-    name                                = lower("${var.prefix}fw1strg")
+    name                                = replace(lower("${var.prefix}fw1strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
     account_tier                        = "Standard"
@@ -34,7 +34,7 @@ resource "azurerm_storage_account" "fw1" {
 }
 
 resource "azurerm_storage_account" "fw2" {
-    name                                = lower("${var.prefix}fw2strg")
+    name                                = replace(lower("${var.prefix}fw2strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
     account_tier                        = "Standard"
