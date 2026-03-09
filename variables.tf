@@ -45,40 +45,6 @@ variable "hub_subnets" {
 
 
 
-
-variable "fw1_v4_ips" {
-    type = map(string)
-    description = "FW1 interface IPv4 IPs"
-}
-
-variable "fw1_v6_ips" {
-    type = map(string)
-    description = "FW1 interface IPv6 IPs"
-}
-
-
-variable "fw2_v4_ips" {
-    type = map(string)
-    description = "FW2 interface IPv4 IPs"
-}
-
-variable "fw2_v6_ips" {
-    type = map(string)
-    description = "FW2 interface IPv6 IPs"
-}
-
-
-variable "fw_floating_v4_ips" {
-    type = map(string)
-    description = "FW floating interface IPv4 IPs"
-}
-
-variable "fw_floating_v6_ips" {
-    type = map(string)
-    description = "FW floating interface IPv6 IPs"
-}
-
-
 variable "spoke_cidrs_v4" {
     type = map(string)
     description = "Map of IPv4 spoke CIDRs for region"
