@@ -48,7 +48,7 @@ resource "azurerm_route" "hub_v4" {
     route_table_name        = "GatewaySubnet_UDR"
     address_prefix          = each.value
     next_hop_type           = "VirtualAppliance" 
-    next_hop_in_ip_address  = var.fw_floating_v4_ips["FW_Float_EXT_v4_IP"]
+    next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v4_IP
 }
 
 resource "azurerm_route" "hub_v6" {
@@ -58,7 +58,7 @@ resource "azurerm_route" "hub_v6" {
     route_table_name        = "GatewaySubnet_UDR"
     address_prefix          = each.value
     next_hop_type           = "VirtualAppliance" 
-    next_hop_in_ip_address  = var.fw_floating_v6_ips["FW_Float_EXT_v6_IP"]
+    next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v6_IP
 }
 
 resource "azurerm_route" "spoke_v4" {
@@ -68,7 +68,7 @@ resource "azurerm_route" "spoke_v4" {
     route_table_name        = "GatewaySubnet_UDR"
     address_prefix          = each.value
     next_hop_type           = "VirtualAppliance" 
-    next_hop_in_ip_address  = var.fw_floating_v4_ips["FW_Float_EXT_v4_IP"]
+    next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v4_IP
 }
 
 resource "azurerm_route" "spoke_v6" {
@@ -78,7 +78,7 @@ resource "azurerm_route" "spoke_v6" {
     route_table_name        = "GatewaySubnet_UDR"
     address_prefix          = each.value
     next_hop_type           = "VirtualAppliance" 
-    next_hop_in_ip_address  = var.fw_floating_v6_ips["FW_Float_EXT_v6_IP"]
+    next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v6_IP
 }
 
 
