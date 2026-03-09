@@ -28,7 +28,7 @@ resource "azurerm_route_table" "this" {
     for_each = var.hub_subnets
         name                            = "${each.key}_UDR"
         location                        = var.az_reg
-        resource_group_name             = azurerm_resource_group.hub_rsg.name
+        resource_group_name             = azurerm_resource_group.hub.name
         bgp_route_propagation_enabled   = each.key == "GatewaySubnet" || each.key == strcontains(each.key, "Bastion" )  || each.key == strcontains(each.key, "EXT") ? true : false
         tags                            = var.tags
 }
@@ -93,7 +93,7 @@ resource "azurerm_route" "spoke_v6" {
 resource "azurerm_subnet" "this" {
   for_each = var.hub_subnets
     name                              = each.key
-    resource_group_name               = azurerm_resource_group.hub_rsg.name
+    resource_group_name               = azurerm_resource_group.hub.name
     virtual_network_name              = azurerm_virtual_network.this.name
     address_prefixes                  = each.value["Subs"] 
     service_endpoints                 = contains( each.value["Sub_Svc_Endpoints"], "null" ) ? null : each.value["Sub_Svc_Endpoints"]
