@@ -91,21 +91,83 @@ variable "spoke_cidrs_v6" {
 
 
 
+variable "fw1_interfaces" {
+    description = "Firewall interface definition variable for fw1"
+    type = map(object({
+        v4_IP  = string
+        v6_IP  = string
+        sub    = string
+    }))
+}
+
+variable "fw2_interfaces" {
+    description = "Firewall interface definition variable for fw2"
+    type = map(object({
+        v4_IP  = string
+        v6_IP  = string
+        sub    = string
+    }))
+}
 
 
+variable "fw_floating_interfaces" {
+    description = "Firewall interface definition variable for floating interfaces"
+    type = map(object({
+        v4_IP  = string
+        v6_IP  = string
+        sub    = string
+    }))
+}
 
 
+variable "fw1-config" {
+    type        = string 
+    description = "firewall config passed to hub"
+}
 
+variable "fw2-config" {
+    type        = string 
+    description = "firewall config passed to hub"
+}
 
+variable "aName" {
+    type = string
+}
 
+variable "aPass" {
+    type        = string
+    sensitive   = true
+}
 
+variable "fw_vm_size" {
+    type = string 
+    default = "Standard_DS8_v5"
+}
 
+variable "fw_publisher" {
+    type = string 
 
+}
 
+variable "fw_offer" {
+    type = string 
 
+}
 
+variable "fw_os_sku" {
+    type = string 
 
+}
 
+variable "fw_version" {
+    type = string 
+
+}
+
+variable "er_gw_sku" {
+    type = string 
+
+}
 
 
 
