@@ -135,6 +135,13 @@ variable "er_gw_sku" {
 
 }
 
+variable "strg_tls_min_ver" {
+    type        = string 
+    description = "Firewall Storage account min TLS Version"  # Only used in commercial
+    default     = null
+}
+
+
 
 
 variable "express_routes" {

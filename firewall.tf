@@ -19,12 +19,14 @@ resource "azurerm_storage_account" "fw1" {
     name                                = replace(lower("${var.prefix}fw1strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
-    account_tier                        = "Standard"
+    account_tier                        = "Premium" # Standard or Premium
     account_replication_type            = "LRS"
     account_kind                        = "StorageV2"
     access_tier                         = "Hot"
     cross_tenant_replication_enabled    = true
     tags                                = var.tags
+    min_tls_version                     = var.strg_tls_min_ver # "TLS1_2"
+    dns_endpoint_type                   = "Standard"
 
     network_rules {
         default_action              = "Deny"                         
@@ -37,12 +39,14 @@ resource "azurerm_storage_account" "fw2" {
     name                                = replace(lower("${var.prefix}fw2strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
-    account_tier                        = "Standard"
+    account_tier                        = "Premium" # Standard or Premium
     account_replication_type            = "LRS"
     account_kind                        = "StorageV2"
     access_tier                         = "Hot"
     cross_tenant_replication_enabled    = true
     tags                                = var.tags
+    min_tls_version                     = var.strg_tls_min_ver # "TLS1_2"
+    dns_endpoint_type                   = "Standard"    
 
     network_rules {
         default_action              = "Deny"                         
@@ -63,6 +67,7 @@ resource "azurerm_availability_set" "this" {
     name                            = "${var.prefix}_fw_Avail_Set"
     location                        = var.az_reg
     resource_group_name             = azurerm_resource_group.fw_rsg.name
+    managed                         = true
     platform_fault_domain_count     = 1
     platform_update_domain_count    = 1
     tags                            = var.tags 
@@ -118,6 +123,7 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address_allocation   = "Static"
         private_ip_address              = each.value["v4_IP"]
         primary                         = true
+        private_ip_address_version      = "IPv4"
     }
 
     ip_configuration {
@@ -224,6 +230,7 @@ resource "azurerm_network_interface" "fw2_int" {
         private_ip_address_allocation   = "Static"
         private_ip_address              = each.value["v4_IP"]
         primary                         = true
+        private_ip_address_version      = "IPv4"
     }
 
     ip_configuration {
