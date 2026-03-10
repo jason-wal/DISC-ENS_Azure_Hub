@@ -39,6 +39,7 @@ variable "hub_subnets" {
         Sub_Delegation_Actions          = list(string)
         priv_endpt                      = string
         default_outbound_access_enabled = bool
+        priv_link_net_pols              = bool
     }))
 }
 

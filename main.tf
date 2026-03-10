@@ -103,7 +103,7 @@ resource "azurerm_subnet" "this" {
     private_endpoint_network_policies = each.value["priv_endpt"] 
 #    private_endpoint_network_policies = each.value["priv_endpt"] ? "Disabled" : "Enabled"
     default_outbound_access_enabled   = each.value["default_outbound_access_enabled"]  
-
+    private_link_service_network_policies_enabled = each.value["priv_link_net_pols"] 
 
     dynamic "delegation" {
         for_each = each.value["Sub_Delegation"] ? [1] : [] 
