@@ -1,6 +1,8 @@
-# Base elements go here
-#############################################################################
-
+#
+#---------------------------------------------------------
+# Create Hub RSG
+#-------------------------------------------------------------
+#
 
 resource "azurerm_resource_group" "hub" {
     name     = "${var.prefix}_rsg"
@@ -8,7 +10,11 @@ resource "azurerm_resource_group" "hub" {
     tags     = var.tags 
 }
 
-# -- Defining the Hub vNet
+#
+#---------------------------------------------------------
+# Create hub vNet
+#-------------------------------------------------------------
+#
 resource "azurerm_virtual_network" "this" {
     name                    = "${var.prefix}_vNet"
     address_space           = values(merge(var.hub_cidrs_v4, var.hub_cidrs_v6))
@@ -19,6 +25,7 @@ resource "azurerm_virtual_network" "this" {
 #    bgp_community           = var.ExprRT_BGP_Primary_Community
 }
 
+#
 #---------------------------------------------------------
 # Route Tables
 #-------------------------------------------------------------
@@ -33,9 +40,7 @@ resource "azurerm_route_table" "this" {
         tags                            = var.tags
 }
 
-
-
-
+#
 #---------------------------------------------------------
 # Create Routes for Express_RT_GW pointed to FW floating external IP
 #-------------------------------------------------------------
@@ -81,10 +86,7 @@ resource "azurerm_route" "spoke_v6" {
     next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v6_IP
 }
 
-
-
-
-
+#
 #---------------------------------------------------------
 # Create Subnets
 #-------------------------------------------------------------
@@ -112,30 +114,22 @@ resource "azurerm_subnet" "this" {
      }
 }
 
-
-
-
+#
 #---------------------------------------------------------
 # Associate Route Tables to subnets
 #-------------------------------------------------------------
 #
+
 resource "azurerm_subnet_route_table_association" "this" {
   for_each = var.hub_subnets  
     subnet_id      = azurerm_subnet.this[each.key].id
     route_table_id = azurerm_route_table.this[each.key].id
 }
 
-
-
-
-
-
-
-
-
-
 #
+#---------------------------------------------------------
 # Create Express Route Gateway
+#-------------------------------------------------------------
 #
 
 resource "azurerm_virtual_network_gateway" "this" {
@@ -144,7 +138,7 @@ resource "azurerm_virtual_network_gateway" "this" {
   resource_group_name         = azurerm_resource_group.hub.name
   type                        = "ExpressRoute"
   active_active               = false
-  enable_bgp                  = false
+#  enable_bgp                  = false
   sku                         = var.er_gw_sku    #"Standard"
   remote_vnet_traffic_enabled = true 
   virtual_wan_traffic_enabled = true
@@ -152,23 +146,16 @@ resource "azurerm_virtual_network_gateway" "this" {
 
   ip_configuration {
     name                            = "${var.prefix}_ExprRT_GW_v4_IP"
-  #  public_ip_address_id            = azurerm_public_ip.ExprRT_GW_Pip_v4.id
     private_ip_address_allocation   = "Dynamic"
     subnet_id                       = azurerm_subnet.this["GatewaySubnet"].id
   }
-
 }
 
-
 #
-# -- Express-RT 
+#---------------------------------------------------------
+# Attach to Express Route Circuits 
+#-------------------------------------------------------------
 #
-
-
-#####  TEMP comment out to test code
-
-
-
 
 resource "azurerm_virtual_network_gateway_connection" "this" {
     for_each = var.express_routes

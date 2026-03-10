@@ -1,19 +1,19 @@
-# Assign values to variables below
-###################################################################
 #
-#   Create virtual Palo Alto FW's
+#---------------------------------------------------------
+# Create FW Resource Group
+#-------------------------------------------------------------
 #
-###################################################################
 
-# create FW Resource Group
-#
 resource "azurerm_resource_group" "fw_rsg" {
     name     = "${var.prefix}_fw_rsg"
     location = var.az_reg
     tags     = var.tags 
 }
 
-# Storage account for boot diagnostics
+#
+#---------------------------------------------------------
+# Create FW Storage Accounts
+#-------------------------------------------------------------
 #
 resource "azurerm_storage_account" "fw1" {
     name                                = replace(lower("${var.prefix}fw1strg"),"_", "" )
@@ -53,8 +53,12 @@ resource "azurerm_storage_account" "fw2" {
 
 
 
-# Availability Set for firewalls
 #
+#---------------------------------------------------------
+# Create FW Availability Set  --- really not needed
+#-------------------------------------------------------------
+#
+
 resource "azurerm_availability_set" "this" {
     name                            = "${var.prefix}_fw_Avail_Set"
     location                        = var.az_reg
@@ -94,12 +98,11 @@ resource "azurerm_network_security_rule" "fxp0_nsg_rule" {
 }
 */
 
-###################################################################################
 #
-#                            Create fw1 Interfaces
+#---------------------------------------------------------
+# Create FW1 Interfaces
+#-------------------------------------------------------------
 #
-###################################################################################
-
 resource "azurerm_network_interface" "fw1_int" {
   for_each = var.fw1_interfaces
     name                              = "${var.prefix}_fw1_${each.key}"
@@ -141,11 +144,11 @@ resource "azurerm_network_interface_security_group_association" "fxp0" {
 
 */
 
-#####################################################################################
 #
-#                                 Create fw1
+#---------------------------------------------------------
+# Create FW1 VM
+#-------------------------------------------------------------
 #
-#####################################################################################
 
 resource "azurerm_linux_virtual_machine" "fw1" {
   name                              = "${var.prefix}-fw1"
@@ -200,26 +203,11 @@ resource "azurerm_linux_virtual_machine" "fw1" {
   
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-###################################################################################
 #
-#                            Create fw2 Interfaces
+#---------------------------------------------------------
+# Create FW2 Interfaces
+#-------------------------------------------------------------
 #
-###################################################################################
 
 resource "azurerm_network_interface" "fw2_int" {
   for_each = var.fw1_interfaces
@@ -262,11 +250,11 @@ resource "azurerm_network_interface_security_group_association" "fxp0" {
 
 */
 
-#####################################################################################
 #
-#                                 Create fw2
+#---------------------------------------------------------
+# Create FW2 VM
+#-------------------------------------------------------------
 #
-#####################################################################################
 
 resource "azurerm_linux_virtual_machine" "fw2" {
   name                              = "${var.prefix}-fw2"
@@ -283,12 +271,12 @@ resource "azurerm_linux_virtual_machine" "fw2" {
   tags                              = var.tags 
 
   network_interface_ids             = [ 
-    azurerm_network_interface.fw1_int["MGMT"].id,
-    azurerm_network_interface.fw1_int["EXT"].id,
-    azurerm_network_interface.fw1_int["Inside"].id,
-    azurerm_network_interface.fw1_int["Peer"].id,
-    azurerm_network_interface.fw1_int["HA"].id,
-    azurerm_network_interface.fw1_int["DMZ"].id,
+    azurerm_network_interface.fw2_int["MGMT"].id,
+    azurerm_network_interface.fw2_int["EXT"].id,
+    azurerm_network_interface.fw2_int["Inside"].id,
+    azurerm_network_interface.fw2_int["Peer"].id,
+    azurerm_network_interface.fw2_int["HA"].id,
+    azurerm_network_interface.fw2_int["DMZ"].id,
   ]
 
   source_image_reference  {
