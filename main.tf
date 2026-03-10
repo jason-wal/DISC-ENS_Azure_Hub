@@ -141,7 +141,7 @@ resource "azurerm_virtual_network_gateway" "this" {
   resource_group_name         = azurerm_resource_group.hub.name
   type                        = "ExpressRoute"
   active_active               = false
-#  enable_bgp                  = false
+  bgp_enabled                 = var.er_bgp_enabled
   sku                         = var.er_gw_sku    #"Standard"
   remote_vnet_traffic_enabled = true 
   virtual_wan_traffic_enabled = true
@@ -174,6 +174,8 @@ resource "azurerm_virtual_network_gateway_connection" "this" {
         use_policy_based_traffic_selectors  = each.value["pol_based_traffic_selector"]
         tags                                = var.tags
         shared_key                          = each.value["shared_key"]
+        private_link_fast_path_enabled      = each.value["prv_link_fast_path_enabled"]
+        connection_mode                     = "Default"
 }
 
 

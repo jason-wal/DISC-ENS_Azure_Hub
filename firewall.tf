@@ -169,6 +169,7 @@ resource "azurerm_linux_virtual_machine" "fw1" {
   vtpm_enabled                      = false
   encryption_at_host_enabled        = false
   tags                              = var.tags 
+  platform_fault_domain             = "-1"
 
   network_interface_ids             = [ 
     azurerm_network_interface.fw1_int["MGMT"].id,
@@ -276,7 +277,8 @@ resource "azurerm_linux_virtual_machine" "fw2" {
   vtpm_enabled                      = false
   encryption_at_host_enabled        = false
   tags                              = var.tags 
-
+  platform_fault_domain             = "-1"
+  
   network_interface_ids             = [ 
     azurerm_network_interface.fw2_int["MGMT"].id,
     azurerm_network_interface.fw2_int["EXT"].id,

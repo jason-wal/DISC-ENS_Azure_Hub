@@ -142,25 +142,31 @@ variable "strg_tls_min_ver" {
     default     = null
 }
 
-
+variable "er_bgp_enabled" {
+    type        = bool 
+    description = "Express_Route Gateway BGP enabled"
+    default     = true
+}
 
 
 variable "express_routes" {
     description = "Settings for express_routes"
     type = map(object({
-        weight                      = string
-        circuit_id                  = string 
-        auth_key                    = string 
-        ergw_bypass                 = bool
-        pol_based_traffic_selector  = bool
-        shared_key                  = string 
+        weight                          = string
+        circuit_id                      = string 
+        auth_key                        = string 
+        ergw_bypass                     = bool
+        pol_based_traffic_selector      = bool
+        shared_key                      = string 
+        prv_link_fast_path_enabled      = bool
     }))
     default={
-        weight                      = null
-        circuit_id                  = null
-        auth_key                    = null
-        ergw_bypass                 = null
-        pol_based_traffic_selector  = null
-        shared_key                  = null
+        weight                          = null
+        circuit_id                      = null
+        auth_key                        = null
+        ergw_bypass                     = null
+        pol_based_traffic_selector      = null
+        shared_key                      = null
+        prv_link_fast_path_enabled      = null
     }
 }
