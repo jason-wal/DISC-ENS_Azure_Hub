@@ -128,3 +128,94 @@ resource "azurerm_subnet_route_table_association" "this" {
 
 
 
+
+
+
+
+
+
+#
+# Create Express Route Gateway
+#
+
+resource "azurerm_virtual_network_gateway" "this" {
+  name                        = "${var.prefix}_ER_GW"
+  location                    = var.az_reg
+  resource_group_name         = azurerm_resource_group.hub.name
+  type                        = "ExpressRoute"
+  active_active               = false
+  enable_bgp                  = false
+  sku                         = var.er_gw_sku    #"Standard"
+  remote_vnet_traffic_enabled = true 
+  virtual_wan_traffic_enabled = true
+  tags                        = var.tags
+
+  ip_configuration {
+    name                            = "${var.prefix}_ExprRT_GW_v4_IP"
+  #  public_ip_address_id            = azurerm_public_ip.ExprRT_GW_Pip_v4.id
+    private_ip_address_allocation   = "Dynamic"
+    subnet_id                       = azurerm_subnet.this["GatewaySubnet"].id
+  }
+
+}
+
+
+#
+# -- Express-RT 
+#
+
+
+#####  TEMP comment out to test code
+
+
+
+
+resource "azurerm_virtual_network_gateway_connection" "this" {
+    for_each = var.express_routes
+        name                		        = "${var.prefix}_${each.key}_EX_RT"
+        location                	        = var.az_reg
+        resource_group_name                 = azurerm_resource_group.hub.name
+        type                                = "ExpressRoute"
+        virtual_network_gateway_id          = azurerm_virtual_network_gateway.this.id
+        routing_weight                      = each.value["weight"]
+        express_route_circuit_id            = each.value["circuit_id"]
+        authorization_key				    = each.value["auth_key"]
+        express_route_gateway_bypass        = each.value["ergw_bypass"]
+        use_policy_based_traffic_selectors  = each.value["pol_based_traffic_selector"]
+        tags                                = var.tags
+        shared_key                          = each.value["shared_key"]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

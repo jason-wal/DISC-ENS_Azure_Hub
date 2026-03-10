@@ -137,5 +137,22 @@ variable "er_gw_sku" {
 
 
 
-
-
+variable "express_routes" {
+    description = "Settings for express_routes"
+    type = map(object({
+        weight                      = string
+        circuit_id                  = string 
+        auth_key                    = string 
+        ergw_bypass                 = bool
+        pol_based_traffic_selector  = bool
+        shared_key                  = string 
+    }))
+    default={
+        weight                      = null
+        circuit_id                  = null
+        auth_key                    = null
+        ergw_bypass                 = null
+        pol_based_traffic_selector  = null
+        shared_key                  = null
+    }
+}
