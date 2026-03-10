@@ -37,7 +37,7 @@ variable "hub_subnets" {
         Sub_Delegation_Name             = string
         Sub_Delegation_Actions_Name     = string
         Sub_Delegation_Actions          = list(string)
-        priv_endpt                      = bool
+        priv_endpt                      = string
         default_outbound_access_enabled = bool
     }))
 }

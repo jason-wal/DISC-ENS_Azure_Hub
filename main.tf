@@ -100,8 +100,10 @@ resource "azurerm_subnet" "this" {
     virtual_network_name              = azurerm_virtual_network.this.name
     address_prefixes                  = each.value["Subs"] 
     service_endpoints                 = contains( each.value["Sub_Svc_Endpoints"], "null" ) ? null : each.value["Sub_Svc_Endpoints"]
-    private_endpoint_network_policies = each.value["priv_endpt"] ? "Disabled" : "Enabled"
+    private_endpoint_network_policies = each.value["priv_endpt"] 
+#    private_endpoint_network_policies = each.value["priv_endpt"] ? "Disabled" : "Enabled"
     default_outbound_access_enabled   = each.value["default_outbound_access_enabled"]  
+
 
     dynamic "delegation" {
         for_each = each.value["Sub_Delegation"] ? [1] : [] 
