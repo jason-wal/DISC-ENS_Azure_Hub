@@ -23,7 +23,7 @@ resource "azurerm_virtual_network" "this" {
     dns_servers                     = var.dns_servers
     tags                            = var.tags
     private_endpoint_vnet_policies  = "Basic"
-#    bgp_community           = var.ExprRT_BGP_Primary_Community
+    bgp_community                   = var.er_bgp_primary_com
 }
 
 #
@@ -95,14 +95,13 @@ resource "azurerm_route" "spoke_v6" {
 
 resource "azurerm_subnet" "this" {
   for_each = var.hub_subnets
-    name                              = each.key
-    resource_group_name               = azurerm_resource_group.hub.name
-    virtual_network_name              = azurerm_virtual_network.this.name
-    address_prefixes                  = each.value["Subs"] 
-    service_endpoints                 = contains( each.value["Sub_Svc_Endpoints"], "null" ) ? null : each.value["Sub_Svc_Endpoints"]
-    private_endpoint_network_policies = each.value["priv_endpt"] 
-#    private_endpoint_network_policies = each.value["priv_endpt"] ? "Disabled" : "Enabled"
-    default_outbound_access_enabled   = each.value["default_outbound_access_enabled"]  
+    name                                          = each.key
+    resource_group_name                           = azurerm_resource_group.hub.name
+    virtual_network_name                          = azurerm_virtual_network.this.name
+    address_prefixes                              = each.value["Subs"] 
+    service_endpoints                             = contains( each.value["Sub_Svc_Endpoints"], "null" ) ? null : each.value["Sub_Svc_Endpoints"]
+    private_endpoint_network_policies             = each.value["priv_endpt"] 
+    default_outbound_access_enabled               = each.value["default_outbound_access_enabled"]  
     private_link_service_network_policies_enabled = each.value["priv_link_net_pols"] 
 
     dynamic "delegation" {

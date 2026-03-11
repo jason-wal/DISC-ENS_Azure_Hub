@@ -170,3 +170,10 @@ variable "express_routes" {
         prv_link_fast_path_enabled      = null
     }
 }
+
+
+variable "er_bgp_primary_com" {
+    type        = string 
+    description = "BGP Community based on primary ER path"  
+    default     = null
+}
