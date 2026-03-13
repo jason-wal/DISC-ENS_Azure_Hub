@@ -46,6 +46,17 @@ variable "hub_subnets" {
 
 
 
+variable "spoke_routes_v4" {
+    type = list(string)
+    description = "List of IPv4 spoke CIDRs for region"
+}
+
+variable "spoke_routes_v6" {
+    type = list(string)
+    description = "List of IPv6 Spoke CIDRs for region"
+}
+
+/*
 variable "spoke_cidrs_v4" {
     type = map(string)
     description = "Map of IPv4 spoke CIDRs for region"
@@ -55,7 +66,7 @@ variable "spoke_cidrs_v6" {
     type = map(string)
     description = "Map of IPv6 Spoke CIDRs for region"
 }
-
+*/
 
 
 variable "fw1_interfaces" {

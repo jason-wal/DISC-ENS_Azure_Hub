@@ -68,7 +68,8 @@ resource "azurerm_route" "hub_v6" {
 }
 
 resource "azurerm_route" "spoke_v4" {
-  for_each = var.spoke_cidrs_v4  
+  for_each = toset(var.spoke_routes_v4)  
+#  for_each = var.spoke_cidrs_v4  
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
     route_table_name        = "GatewaySubnet_UDR"
@@ -78,7 +79,8 @@ resource "azurerm_route" "spoke_v4" {
 }
 
 resource "azurerm_route" "spoke_v6" {
-  for_each = var.spoke_cidrs_v6
+  for_each = toset(var.spoke_routes_v6)
+#  for_each = var.spoke_cidrs_v6
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
     route_table_name        = "GatewaySubnet_UDR"
