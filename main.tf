@@ -20,7 +20,7 @@ resource "azurerm_virtual_network" "this" {
     address_space                   = values(merge(var.hub_cidrs_v4, var.hub_cidrs_v6))
     location                        = var.az_reg
     resource_group_name             = azurerm_resource_group.hub.name
-    dns_servers                     = var.dns_servers
+#    dns_servers                     = var.dns_servers
     tags                            = var.tags
     private_endpoint_vnet_policies  = "Basic"
     bgp_community                   = var.er_bgp_primary_com

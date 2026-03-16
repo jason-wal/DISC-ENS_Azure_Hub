@@ -43,7 +43,10 @@ variable "hub_subnets" {
     }))
 }
 
-
+variable "private-dns-zones" {
+    type = list(string)
+    description = "Private DNS Zones linked to Hub"
+}
 
 
 variable "spoke_routes_v4" {
