@@ -69,7 +69,7 @@ resource "azurerm_route" "hub_v6" {
 
 resource "azurerm_route" "spoke_v4" {
   for_each = {
-    for i in var.spoke_routes_v4 : replace( i ,"/", "-" ) => key  
+    for i in var.spoke_routes_v4 : replace( i ,"/", "-" ) => i
   }
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
@@ -81,7 +81,7 @@ resource "azurerm_route" "spoke_v4" {
 
 resource "azurerm_route" "spoke_v6" {
   for_each = {
-    for i in var.spoke_routes_v6 : replace(replace( i ,"/", "-" ),":", "." )=> key  
+    for i in var.spoke_routes_v6 : replace(replace( i ,"/", "-" ),":", "." )=> i
   }
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
