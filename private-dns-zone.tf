@@ -22,6 +22,14 @@ resource "azurerm_private_dns_zone" "this" {
         name                = each.key
         resource_group_name = azurerm_resource_group.hub-dns.name
         tags                = var.tags 
+        soa_record {
+            email           = var.zone_soa.email
+            expire_time     = var.zone.expire_time 
+            minimum_ttl     = var.zone.min_ttl   
+            refresh_time    = var.zone.refresh_time
+            retry_time      = var.zone.retry_type 
+            ttl             = var.zone.ttl            
+        }
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {

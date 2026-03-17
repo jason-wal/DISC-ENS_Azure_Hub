@@ -191,3 +191,15 @@ variable "er_bgp_primary_com" {
     description = "BGP Community based on primary ER path"  
     default     = null
 }
+
+
+variable "zone_soa" {
+    type = object({
+      email         = string
+      expire_time   = string
+      min_ttl       = string 
+      refresh_time  = string 
+      retry_type    = string 
+      ttl           = string 
+    })
+}
