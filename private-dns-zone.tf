@@ -28,7 +28,8 @@ resource "azurerm_private_dns_zone" "this" {
             minimum_ttl     = var.zone_soa.min_ttl   
             refresh_time    = var.zone_soa.refresh_time
             retry_time      = var.zone_soa.retry_type 
-            ttl             = var.zone_soa.ttl            
+            ttl             = var.zone_soa.ttl          
+            tags            = var.tags  
         }
     depends_on = [ azurerm_virtual_network.this ]
 }
