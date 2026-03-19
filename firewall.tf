@@ -217,7 +217,7 @@ resource "azurerm_linux_virtual_machine" "fw1" {
 #
 
 resource "azurerm_network_interface" "fw2_int" {
-  for_each = var.fw1_interfaces
+  for_each = var.fw2_interfaces
     name                              = "${var.prefix}_fw2_${each.key}"
     location                          = var.az_reg
     resource_group_name               = azurerm_resource_group.fw_rsg.name

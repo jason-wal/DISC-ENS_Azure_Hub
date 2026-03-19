@@ -30,6 +30,7 @@ resource "azurerm_private_dns_zone" "this" {
             retry_time      = var.zone_soa.retry_type 
             ttl             = var.zone_soa.ttl            
         }
+    depends_on = [ azurerm_virtual_network.this ]
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
