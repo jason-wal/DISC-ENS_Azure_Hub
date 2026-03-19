@@ -46,7 +46,7 @@ resource "azurerm_route_table" "this" {
 # Create Routes for Express_RT_GW pointed to FW floating external IP
 #-------------------------------------------------------------
 #
-
+/*
 resource "azurerm_route" "hub_v4" {
   for_each = var.hub_cidrs_v4  
     name                    = each.key
@@ -66,6 +66,7 @@ resource "azurerm_route" "hub_v6" {
     next_hop_type           = "VirtualAppliance" 
     next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v6_IP
 }
+*/
 
 resource "azurerm_route" "spoke_v4" {
   for_each = {
