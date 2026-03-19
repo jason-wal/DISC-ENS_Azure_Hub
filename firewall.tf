@@ -19,7 +19,7 @@ resource "azurerm_storage_account" "fw1" {
     name                                = replace(lower("${var.prefix}fw1strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
-    account_tier                        = "Premium" # Standard or Premium
+    account_tier                        = "Standard" # Standard or Premium
     account_replication_type            = "LRS"
     account_kind                        = "StorageV2"
     access_tier                         = "Hot"
@@ -39,7 +39,7 @@ resource "azurerm_storage_account" "fw2" {
     name                                = replace(lower("${var.prefix}fw2strg"),"_", "" )
     resource_group_name                 = azurerm_resource_group.fw_rsg.name
     location                            = var.az_reg
-    account_tier                        = "Premium" # Standard or Premium
+    account_tier                        = "Standard" # Standard or Premium
     account_replication_type            = "LRS"
     account_kind                        = "StorageV2"
     access_tier                         = "Hot"
