@@ -196,7 +196,7 @@ variable "er_bgp_primary_com" {
     default     = null
 }
 
-
+/*
 variable "zone_soa" {
     type = object({
       email         = string
@@ -207,3 +207,5 @@ variable "zone_soa" {
       ttl           = string 
     })
 }
+
+*/
