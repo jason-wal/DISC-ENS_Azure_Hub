@@ -43,14 +43,7 @@ variable "hub_subnets" {
     }))
 }
 
-/*
 
-variable "private-dns-zones" {
-    type = list(string)
-    description = "Private DNS Zones linked to Hub"
-}
-
-*/
 
 
 variable "spoke_routes_v4" {
@@ -196,16 +189,3 @@ variable "er_bgp_primary_com" {
     default     = null
 }
 
-/*
-variable "zone_soa" {
-    type = object({
-      email         = string
-      expire_time   = string
-      min_ttl       = string 
-      refresh_time  = string 
-      retry_type    = string 
-      ttl           = string 
-    })
-}
-
-*/
