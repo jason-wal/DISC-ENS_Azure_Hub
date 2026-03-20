@@ -1,7 +1,7 @@
 
 
 
-
+/*
 
 
 #
@@ -42,13 +42,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "this" {
     virtual_network_id      = azurerm_virtual_network.this.id
     registration_enabled    = false
     tags                    = var.tags 
-    
+
 }
 
 
 
 
-
+*/
 
 
 
