@@ -12,3 +12,6 @@ output "vnet_id" {
     value = azurerm_virtual_network.this.id
 }
 
+output "dns_rsg_name" {
+    value = azurerm_resource_group.hub-dns.name
+}
