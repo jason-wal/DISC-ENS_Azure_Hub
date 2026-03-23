@@ -20,7 +20,7 @@ resource "azurerm_virtual_network" "this" {
     address_space                   = values(merge(var.hub_cidrs_v4, var.hub_cidrs_v6))
     location                        = var.az_reg
     resource_group_name             = azurerm_resource_group.hub.name
-#    dns_servers                     = var.dns_servers
+    dns_servers                     = var.dns_servers
     tags                            = var.tags
     private_endpoint_vnet_policies  = "Basic"
     bgp_community                   = var.er_bgp_primary_com
@@ -197,14 +197,14 @@ resource "azurerm_virtual_network_gateway" "this" {
 
 resource "azurerm_virtual_network_gateway_connection" "this" {
     for_each = var.express_routes
-        name                		        = "${var.prefix}_${each.key}_EX_RT"
-        location                	        = var.az_reg
+        name                		            = "${var.prefix}_${each.key}_EX_RT"
+        location                	          = var.az_reg
         resource_group_name                 = azurerm_resource_group.hub.name
         type                                = "ExpressRoute"
         virtual_network_gateway_id          = azurerm_virtual_network_gateway.this.id
         routing_weight                      = each.value["weight"]
         express_route_circuit_id            = each.value["circuit_id"]
-        authorization_key				    = each.value["auth_key"]
+        authorization_key				            = each.value["auth_key"]
         express_route_gateway_bypass        = each.value["ergw_bypass"]
         use_policy_based_traffic_selectors  = each.value["pol_based_traffic_selector"]
         tags                                = var.tags
