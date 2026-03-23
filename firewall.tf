@@ -134,6 +134,25 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address              = each.value["v6_IP"]
     }
 
+    ip_configuration {
+        name                            = !contains( [ "MGMT", "HA" ], each.key ) ? "${var.prefix}_float_${each.key}_v4" : null 
+        subnet_id                       = !contains( [ "MGMT", "HA" ], each.key ) ? azurerm_subnet.this[each.value["sub"]].id : null
+        private_ip_address_allocation   = !contains( [ "MGMT", "HA" ], each.key ) ? "Static" : null
+        private_ip_address              = !contains( [ "MGMT", "HA" ], each.key ) ? fw_floating_interfaces[each.key].v4_IP : null
+        primary                         = !contains( [ "MGMT", "HA" ], each.key ) ? false  : null
+        private_ip_address_version      = !contains( [ "MGMT", "HA" ], each.key ) ? "IPv4" : null
+    }
+
+    ip_configuration {
+        name                            = !contains( [ "MGMT", "HA" ], each.key ) ? "${var.prefix}_float_${each.key}_v6" : null 
+        subnet_id                       = !contains( [ "MGMT", "HA" ], each.key ) ? azurerm_subnet.this[each.value["sub"]].id : null
+        private_ip_address_allocation   = !contains( [ "MGMT", "HA" ], each.key ) ? "Static" : null
+        private_ip_address              = !contains( [ "MGMT", "HA" ], each.key ) ? fw_floating_interfaces[each.key].v6_IP : null
+        primary                         = !contains( [ "MGMT", "HA" ], each.key ) ? false  : null
+        private_ip_address_version      = !contains( [ "MGMT", "HA" ], each.key ) ? "IPv4" : null
+    }
+
+
 
     
 }
