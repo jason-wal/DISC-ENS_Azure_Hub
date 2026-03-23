@@ -37,7 +37,7 @@ resource "azurerm_route_table" "this" {
         name                            = "${each.key}_UDR"
         location                        = var.az_reg
         resource_group_name             = azurerm_resource_group.hub.name
-        bgp_route_propagation_enabled   = each.key == "GatewaySubnet" || each.key == strcontains(each.key, "Bastion" )  || each.key == strcontains(each.key, "EXT") ? true : false
+        bgp_route_propagation_enabled   = each.key == "GatewaySubnet" || strcontains( each.key, "Bastion" )  || strcontains( each.key, "EXT") ? true : false
         tags                            = var.tags
 }
 
