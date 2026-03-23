@@ -133,6 +133,9 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address_version      = "IPv6"
         private_ip_address              = each.value["v6_IP"]
     }
+
+
+    
 }
 
 
@@ -172,6 +175,7 @@ resource "azurerm_linux_virtual_machine" "fw1" {
   vtpm_enabled                      = false
   encryption_at_host_enabled        = false
   tags                              = var.tags 
+  availability_set_id               = azurerm_availability_set.this
 #  platform_fault_domain             = "-1"   # requires scale sets
 
   network_interface_ids             = [ 
@@ -280,6 +284,7 @@ resource "azurerm_linux_virtual_machine" "fw2" {
   vtpm_enabled                      = false
   encryption_at_host_enabled        = false
   tags                              = var.tags 
+  availability_set_id               = azurerm_availability_set.this
 #  platform_fault_domain             = "-1"   # requires scale sets
 
   network_interface_ids             = [ 
