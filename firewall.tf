@@ -146,6 +146,7 @@ resource "azurerm_network_interface" "fw1_int" {
           }
     }
 
+/*
     dynamic "ip_configuration" {
         for_each = !contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -158,7 +159,7 @@ resource "azurerm_network_interface" "fw1_int" {
           }
     }
 
-
+*/
 
     
 }
