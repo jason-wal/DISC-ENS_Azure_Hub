@@ -154,7 +154,7 @@ resource "azurerm_network_interface" "fw1_int" {
             private_ip_address_allocation   = "Static" 
             private_ip_address              = var.fw_floating_interfaces[each.key].v6_IP 
             primary                         = false  
-            private_ip_address_version      = "IPv4" 
+            private_ip_address_version      = "IPv6" 
           }
     }
 
