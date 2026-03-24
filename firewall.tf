@@ -126,6 +126,19 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address_version      = "IPv4"
     }
 
+    dynamic "ip_configuration" {
+        for_each = contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
+          content {
+            name                            =  "${var.prefix}_fw1_${each.key}_v6"
+            subnet_id                       = azurerm_subnet.this[each.value["sub"]].id 
+            private_ip_address_allocation   = "Static" 
+            private_ip_address              = each.value["v6_IP"]
+            primary                         = false  
+            private_ip_address_version      = "IPv6" 
+          }
+    }
+
+/*
     ip_configuration {
         name                            = "${var.prefix}_fw1_${each.key}_v6"
         subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
@@ -133,7 +146,7 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address_version      = "IPv6"
         private_ip_address              = each.value["v6_IP"]
     }
-
+*/
     dynamic "ip_configuration" {
         for_each = !contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -146,7 +159,6 @@ resource "azurerm_network_interface" "fw1_int" {
           }
     }
 
-/*
     dynamic "ip_configuration" {
         for_each = !contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -158,8 +170,6 @@ resource "azurerm_network_interface" "fw1_int" {
             private_ip_address_version      = "IPv6" 
           }
     }
-
-*/
 
     
 }
@@ -267,6 +277,18 @@ resource "azurerm_network_interface" "fw2_int" {
         private_ip_address_version      = "IPv4"
     }
 
+    dynamic "ip_configuration" {
+        for_each = contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
+          content {
+            name                            =  "${var.prefix}_fw2_${each.key}_v6"
+            subnet_id                       = azurerm_subnet.this[each.value["sub"]].id 
+            private_ip_address_allocation   = "Static" 
+            private_ip_address              = each.value["v6_IP"]
+            primary                         = false  
+            private_ip_address_version      = "IPv6" 
+          }
+    }
+/*
     ip_configuration {
         name                            = "${var.prefix}_fw2_${each.key}_v6"
         subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
@@ -274,6 +296,7 @@ resource "azurerm_network_interface" "fw2_int" {
         private_ip_address_version      = "IPv6"
         private_ip_address              = each.value["v6_IP"]
     }
+*/
 }
 
 

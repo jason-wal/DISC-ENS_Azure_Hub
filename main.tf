@@ -94,6 +94,30 @@ resource "azurerm_route" "spoke_v6" {
 
 
 
+resource "azurerm_route" "bastion_v4" {
+    name                    = "${var.prefix}_Bastion_v4"
+    resource_group_name     = azurerm_resource_group.hub.name
+    route_table_name        = "GatewaySubnet_UDR"
+    address_prefix          = cidrsubnet( var.hub_cidrs_v4["Primary_4"] , 4, 4 )   
+    next_hop_type           = "VnetLocal" 
+}
+
+
+resource "azurerm_route" "bastion_v6" {
+    name                    = "${var.prefix}_Bastion_v6"
+    resource_group_name     = azurerm_resource_group.hub.name
+    route_table_name        = "GatewaySubnet_UDR"
+    address_prefix          = cidrsubnet( var.hub_cidrs_v6["Primary_6"] , 4, 4 )   
+    next_hop_type           = "VnetLocal" 
+}
+
+
+
+
+
+
+
+
 
 #
 #---------------------------------------------------------

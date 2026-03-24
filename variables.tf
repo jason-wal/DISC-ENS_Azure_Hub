@@ -73,7 +73,7 @@ variable "fw1_interfaces" {
     description = "Firewall interface definition variable for fw1"
     type = map(object({
         v4_IP  = string
-        v6_IP  = string
+        v6_IP  = optional(string)
         sub    = string
     }))
 }
@@ -82,7 +82,7 @@ variable "fw2_interfaces" {
     description = "Firewall interface definition variable for fw2"
     type = map(object({
         v4_IP  = string
-        v6_IP  = string
+        v6_IP  = optional(string)
         sub    = string
     }))
 }
