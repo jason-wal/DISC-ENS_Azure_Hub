@@ -46,7 +46,7 @@ resource "azurerm_route_table" "this" {
 # Create Routes for Express_RT_GW pointed to FW floating external IP
 #-------------------------------------------------------------
 #
-/*
+
 resource "azurerm_route" "hub_v4" {
   for_each = var.hub_cidrs_v4  
     name                    = each.key
@@ -66,7 +66,7 @@ resource "azurerm_route" "hub_v6" {
     next_hop_type           = "VirtualAppliance" 
     next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v6_IP
 }
-*/
+
 
 resource "azurerm_route" "spoke_v4" {
   for_each = {
@@ -101,7 +101,6 @@ resource "azurerm_route" "ext_v4" {
     next_hop_type           = "VnetLocal" 
 }
 
-
 resource "azurerm_route" "ext_v6" {
     name                    = "${var.prefix}_EXT_v6"
     resource_group_name     = azurerm_resource_group.hub.name
@@ -112,21 +111,21 @@ resource "azurerm_route" "ext_v6" {
 
 
 
-
 resource "azurerm_route" "bastion_v4" {
     name                    = "${var.prefix}_Bastion_v4"
     resource_group_name     = azurerm_resource_group.hub.name
     route_table_name        = "GatewaySubnet_UDR"
-    address_prefix          = cidrsubnet( var.hub_cidrs_v4["Primary_v4"] , 4, 4 )   
+    address_prefix          = var.hub_bastion_v4
+#    address_prefix          = cidrsubnet( var.hub_cidrs_v4["Primary_v4"] , 4, 4 )   
     next_hop_type           = "VnetLocal" 
 }
-
 
 resource "azurerm_route" "bastion_v6" {
     name                    = "${var.prefix}_Bastion_v6"
     resource_group_name     = azurerm_resource_group.hub.name
     route_table_name        = "GatewaySubnet_UDR"
-    address_prefix          = cidrsubnet( var.hub_cidrs_v6["Primary_v6"] , 4, 7 )   
+    address_prefix          = var.hub_bastion_v6
+ #   address_prefix          = cidrsubnet( var.hub_cidrs_v6["Primary_v6"] , 4, 7 )   
     next_hop_type           = "VnetLocal" 
 }
 
