@@ -225,6 +225,30 @@ resource "azurerm_subnet_route_table_association" "this" {
     route_table_id = azurerm_route_table.this[each.key].id
 }
 
+
+
+
+
+
+
+#
+#---------------------------------------------------------
+# Associate NSG to Bastion Subnet
+#-------------------------------------------------------------
+#
+
+resource "azurerm_subnet_network_security_group_association" "bastion" {
+  subnet_id                 = azurerm_subnet.this["${var.prefix}_Bastion"].id
+  network_security_group_id = azurerm_network_security_group.bastion.id
+}
+
+
+
+
+
+
+
+
 #
 #---------------------------------------------------------
 # Create Express Route Gateway
