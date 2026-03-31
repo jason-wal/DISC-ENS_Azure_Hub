@@ -43,6 +43,21 @@ variable "hub_subnets" {
     }))
 }
 
+variable "mgmt_nsg" {
+    description = "subnet definition variable"
+    type = map(object({
+        priority                        = string
+        protocol                        = string
+        destination_port_range          = optional(string)
+        destination_port_ranges         = optional(list(string))
+        source_address_prefix           = optional(string)
+        source_address_prefixes         = optional(list(string))
+        destination_address_prefix      = optional(string)
+        destination_address_prefixes    = optional(list(string))
+        access                          = string
+        direction                       = string
+    }))
+}
 
 
 

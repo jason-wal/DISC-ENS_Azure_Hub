@@ -41,6 +41,51 @@ resource "azurerm_route_table" "this" {
         tags                            = var.tags
 }
 
+
+#
+#---------------------------------------------------------
+# Create NSG for Bastion Subnet
+#-------------------------------------------------------------
+#
+
+resource "azurerm_network_security_group" "bastion" {
+  name                = "${var.prefix}_Bastion_NSG"
+  location            = azurerm_resource_group.hub.location
+  resource_group_name = azurerm_resource_group.hub.name
+}
+
+
+
+resource "azurerm_network_security_rule" "bastion_rule" {
+  for_each = var.mgmt_nsg
+    name                          = each.key
+    priority                      = each.value["priority"]
+    direction                     = each.value["direction"]
+    access                        = each.value["access"]
+    protocol                      = each.value["protocol"]
+    source_port_range             = "*"
+    destination_port_range        = each.value["destination_port_range"]
+    destination_port_ranges       = each.value["destination_port_ranges"]
+    source_address_prefix         = each.value["source_address_prefix"]
+    source_address_prefixes       = each.value["source_address_prefixes"]
+    destination_address_prefix    = each.value["destination_address_prefix"]
+    destination_address_prefixes  = each.value["destination_address_prefixes"]
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.bastion.name
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 #
 #---------------------------------------------------------
 # Create Routes for Express_RT_GW pointed to FW floating external IP
