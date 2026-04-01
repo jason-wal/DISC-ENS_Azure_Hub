@@ -52,6 +52,7 @@ resource "azurerm_network_security_group" "bastion" {
   name                = "${var.prefix}_Bastion_NSG"
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
+  tags                = var.tags
 }
 
 
