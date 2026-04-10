@@ -320,6 +320,7 @@ resource "azurerm_network_interface_security_group_association" "fxp0" {
 #-------------------------------------------------------------
 #
 
+/*
 resource "azurerm_linux_virtual_machine" "fw2" {
   name                              = replace("${var.prefix}-fw2","_", "-")
   resource_group_name               = azurerm_resource_group.fw_rsg.name
@@ -375,6 +376,6 @@ resource "azurerm_linux_virtual_machine" "fw2" {
   
 }
 
-
+*/
 
 
