@@ -184,7 +184,7 @@ resource "azurerm_route" "bastion_v6" {
 resource "azurerm_route" "peer_hub_v4" {
   for_each = { 
     for key, value in var.peer_routes_v4 : key => value 
-    if !contains([each.key], "null" )
+    if !contains([key], "null" )
   } 
 
     name                    = each.key
@@ -198,7 +198,7 @@ resource "azurerm_route" "peer_hub_v4" {
 resource "azurerm_route" "peer_hub_v6" {
   for_each = { 
     for key, value in var.peer_routes_v6 : key => value 
-    if !contains([each.key], "null" )
+    if !contains([key], "null" )
   } 
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
