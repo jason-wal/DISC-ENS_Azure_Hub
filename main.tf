@@ -178,6 +178,7 @@ resource "azurerm_route" "bastion_v6" {
 }
 
 
+
 #################  ROUTES to different regional hubs ################
 
 resource "azurerm_route" "peer_hub_v4" {
