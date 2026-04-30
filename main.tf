@@ -196,7 +196,7 @@ resource "azurerm_route" "peer_hub_v6" {
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
     route_table_name        = "${var.prefix}_Peer_UDR"
-    address_prefix          = replace(replace( each.key ,"-", "/" ), ".", ":" )
+    address_prefix          = replace(replace( each.key ,"-", "/" ), ":", "." )
     next_hop_type           = "VirtualAppliance" 
     next_hop_in_ip_address  = each.value
 }
