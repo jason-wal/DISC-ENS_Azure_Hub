@@ -449,14 +449,14 @@ resource "azurerm_lb_backend_address_pool" "pool-v4" {
 
 resource "azurerm_network_interface_backend_address_pool_association" "fw1-v4" {
   for_each = var.fw_floating_interfaces
-    network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_${each.key}"].id
+    network_interface_id    = azurerm_network_interface.fw1_int[each.key].id
     ip_configuration_name   = "${var.prefix}_fw1_${each.key}_v4"
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "fw2-v4" {
   for_each = var.fw_floating_interfaces
-    network_interface_id    = azurerm_network_interface.fw2_int["${var.prefix}_fw2_${each.key}"].id
+    network_interface_id    = azurerm_network_interface.fw2_int[each.key].id
     ip_configuration_name   = "${var.prefix}_fw2_${each.key}_v4"
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
 }
@@ -473,14 +473,14 @@ resource "azurerm_lb_backend_address_pool" "pool-v6" {
 
 resource "azurerm_network_interface_backend_address_pool_association" "fw1-v6" {
   for_each = var.fw_floating_interfaces
-    network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_${each.key}"].id
+    network_interface_id    = azurerm_network_interface.fw1_int[each.key].id
     ip_configuration_name   = "${var.prefix}_fw1_${each.key}_v6"
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
   for_each = var.fw_floating_interfaces
-    network_interface_id    = azurerm_network_interface.fw2_int["${var.prefix}_fw2_${each.key}"].id
+    network_interface_id    = azurerm_network_interface.fw2_int[each.key].id
     ip_configuration_name   = "${var.prefix}_fw2_${each.key}_v6"
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v6[each.key].id
 }
@@ -497,7 +497,7 @@ resource "azurerm_lb_rule" "rule-v4" {
     frontend_port                   = "0"
     backend_port                    = "0"
     frontend_ip_configuration_name  = "${var.prefix}_${each.key}_FE_IPv4"
-    backend_address_pool_ids        = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+    backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v4[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
 }
@@ -513,7 +513,7 @@ resource "azurerm_lb_rule" "rule-v6" {
     frontend_port                   = "0"
     backend_port                    = "0"
     frontend_ip_configuration_name  = "${var.prefix}_${each.key}_FE_IPv6"
-    backend_address_pool_ids        = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+    backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v6[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
 }
