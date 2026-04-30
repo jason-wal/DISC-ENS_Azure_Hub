@@ -422,7 +422,7 @@ resource "azurerm_lb" "fw" {
     frontend_ip_configuration {
       name                          = "${var.prefix}_${each.key}_FE_IPv4"
       subnet_id                     = azurerm_subnet.this["${var.prefix}_${each.key}"].id
-      private_ip_address            = var.fw_floating_interfaces["${var.prefix}_${each.key}"].v4_IP 
+      private_ip_address            = var.fw_floating_interfaces[each.key].v4_IP 
       private_ip_address_allocation = "Static"
       private_ip_address_version    = "IPv4"
     }
@@ -430,7 +430,7 @@ resource "azurerm_lb" "fw" {
     frontend_ip_configuration {
       name                          = "${var.prefix}_${each.key}_FE_IPv6"
       subnet_id                     = azurerm_subnet.this["${var.prefix}_${each.key}"].id
-      private_ip_address            = var.fw_floating_interfaces["${var.prefix}_${each.key}"].v6_IP 
+      private_ip_address            = var.fw_floating_interfaces[each.key].v6_IP 
       private_ip_address_allocation = "Static"
       private_ip_address_version    = "IPv6"
     }
