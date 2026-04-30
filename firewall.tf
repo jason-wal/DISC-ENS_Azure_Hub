@@ -1,3 +1,17 @@
+locals {
+  lb_idle_timeout   = "30"  # between 4 minutes and 100 minutes
+  tcp_reset_enabled = true   # true of false 
+  lb_probe_protocol = "Tcp"
+  lb_probe_port     = "80"
+  lb_probe_interval = "15"
+
+
+
+
+}
+
+
+
 #
 #---------------------------------------------------------
 # Create FW Resource Group
@@ -126,6 +140,15 @@ resource "azurerm_network_interface" "fw1_int" {
         private_ip_address_version      = "IPv4"
     }
 
+    ip_configuration {
+        name                            = "${var.prefix}_fw1_${each.key}_v6"
+        subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
+        private_ip_address_allocation   = "Static"
+        private_ip_address_version      = "IPv6"
+        private_ip_address              = each.value["v6_IP"]
+    }
+
+/*
     dynamic "ip_configuration" {
         for_each = contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -137,16 +160,9 @@ resource "azurerm_network_interface" "fw1_int" {
             private_ip_address_version      = "IPv6" 
           }
     }
+*/
 
 /*
-    ip_configuration {
-        name                            = "${var.prefix}_fw1_${each.key}_v6"
-        subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
-        private_ip_address_allocation   = "Static"
-        private_ip_address_version      = "IPv6"
-        private_ip_address              = each.value["v6_IP"]
-    }
-*/
     dynamic "ip_configuration" {
         for_each = !contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -170,7 +186,7 @@ resource "azurerm_network_interface" "fw1_int" {
             private_ip_address_version      = "IPv6" 
           }
     }
-
+*/
     
 }
 
@@ -277,6 +293,15 @@ resource "azurerm_network_interface" "fw2_int" {
         private_ip_address_version      = "IPv4"
     }
 
+    ip_configuration {
+        name                            = "${var.prefix}_fw2_${each.key}_v6"
+        subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
+        private_ip_address_allocation   = "Static"
+        private_ip_address_version      = "IPv6"
+        private_ip_address              = each.value["v6_IP"]
+    }
+
+/*
     dynamic "ip_configuration" {
         for_each = contains( [ "MGMT", "HA" ], each.key ) ? [1] : []
           content {
@@ -288,14 +313,9 @@ resource "azurerm_network_interface" "fw2_int" {
             private_ip_address_version      = "IPv6" 
           }
     }
+*/
 /*
-    ip_configuration {
-        name                            = "${var.prefix}_fw2_${each.key}_v6"
-        subnet_id                       = azurerm_subnet.this[each.value["sub"]].id
-        private_ip_address_allocation   = "Static"
-        private_ip_address_version      = "IPv6"
-        private_ip_address              = each.value["v6_IP"]
-    }
+
 */
 }
 
@@ -379,3 +399,259 @@ resource "azurerm_linux_virtual_machine" "fw2" {
 
 
 
+
+
+#
+#---------------------------------------------------------
+# Create Load balancers
+#-------------------------------------------------------------
+#
+
+
+#--------------------------------------------------------------------------------
+# Load balancer
+
+resource "azurerm_lb" "fw" {
+  for_each = var.fw_floating_interfaces
+    name                = "${var.prefix}_${each.key}_LB"
+    location            = var.az_reg
+    resource_group_name = azurerm_resource_group.fw_rsg.name
+    sku                 = "Standard"
+    sku_tier            = "Regional"
+
+    frontend_ip_configuration {
+      name                          = "${var.prefix}_${each.key}_FE_IPv4"
+      subnet_id                     = azurerm_subnet.this["${var.prefix}_${each.key}"].id
+      private_ip_address            = var.fw_floating_interfaces["${var.prefix}_${each.key}"].v4_IP 
+      private_ip_address_allocation = "Static"
+      private_ip_address_version    = "IPv4"
+    }
+
+    frontend_ip_configuration {
+      name                          = "${var.prefix}_${each.key}_FE_IPv6"
+      subnet_id                     = azurerm_subnet.this["${var.prefix}_${each.key}"].id
+      private_ip_address            = var.fw_floating_interfaces["${var.prefix}_${each.key}"].v6_IP 
+      private_ip_address_allocation = "Static"
+      private_ip_address_version    = "IPv6"
+    }
+
+}
+
+#--------------------------------------------------------------------------------
+# v4 pool and backends
+
+resource "azurerm_lb_backend_address_pool" "pool-v4" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id     = azurerm_lb.fw[each.key].id
+    name                = "${var.prefix}_${each.key}_BE_Pool-v4"
+    virtual_network_id  = azurerm_virtual_network.this.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw1-v4" {
+  for_each = var.fw_floating_interfaces
+    network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_${each.key}"].id
+    ip_configuration_name   = "${var.prefix}_fw1_${each.key}_v4"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw2-v4" {
+  for_each = var.fw_floating_interfaces
+    network_interface_id    = azurerm_network_interface.fw2_int["${var.prefix}_fw2_${each.key}"].id
+    ip_configuration_name   = "${var.prefix}_fw2_${each.key}_v4"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+}
+
+#--------------------------------------------------------------------------------
+# EXT v6 pool and backends
+
+resource "azurerm_lb_backend_address_pool" "pool-v6" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id     = azurerm_lb.fw[each.key].id
+    name                = "${var.prefix}_${each.key}_BE_Pool-v6"
+    virtual_network_id  = azurerm_virtual_network.this.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw1-v6" {
+  for_each = var.fw_floating_interfaces
+    network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_${each.key}"].id
+    ip_configuration_name   = "${var.prefix}_fw1_${each.key}_v6"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
+  for_each = var.fw_floating_interfaces
+    network_interface_id    = azurerm_network_interface.fw2_int["${var.prefix}_fw2_${each.key}"].id
+    ip_configuration_name   = "${var.prefix}_fw2_${each.key}_v6"
+    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+}
+
+
+#--------------------------------------------------------------------------------
+# EXT v4 rule
+
+resource "azurerm_lb_rule" "rule-v4" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id                 = azurerm_lb.fw[each.key].id
+    name                            = "${var.prefix}_${each.key}_v4_rule"
+    protocol                        = "All"
+    frontend_port                   = "0"
+    backend_port                    = "0"
+    frontend_ip_configuration_name  = "${var.prefix}_${each.key}_FE_IPv4"
+    backend_address_pool_ids        = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+    idle_timeout_in_minutes         = local.lb_idle_timeout
+    tcp_reset_enabled               = local.tcp_reset_enabled
+}
+
+#--------------------------------------------------------------------------------
+# EXT v6 rule
+
+resource "azurerm_lb_rule" "rule-v6" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id                 = azurerm_lb.fw[each.key].id
+    name                            = "${var.prefix}_${each.key}_v6_rule"
+    protocol                        = "All"
+    frontend_port                   = "0"
+    backend_port                    = "0"
+    frontend_ip_configuration_name  = "${var.prefix}_${each.key}_FE_IPv6"
+    backend_address_pool_ids        = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+    idle_timeout_in_minutes         = local.lb_idle_timeout
+    tcp_reset_enabled               = local.tcp_reset_enabled
+}
+
+
+
+
+#--------------------------------------------------------------------------------
+# EXT v4 probe
+
+resource "azurerm_lb_probe" "fw" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id     = azurerm_lb.fw[each.key].id
+    name                = "${var.prefix}_${each.key}_probe"
+    protocol            = local.lb_probe_protocol
+    port                = local.lb_probe_port
+    interval_in_seconds = local.lb_probe_interval
+}
+
+/*
+
+#--------------------------------------------------------------------------------
+# External LB
+
+resource "azurerm_lb" "ext" {
+  name                = "${var.prefix}_EXT_LB"
+  location            = var.az_reg
+  resource_group_name = azurerm_resource_group.fw_rsg.name
+  sku                 = "Standard"
+  sku_tier            = "Regional"
+
+  frontend_ip_configuration {
+    name                          = "${var.prefix}_EXT_FE_IPv4"
+    subnet_id                     = azurerm_subnet.this["${var.prefix}_EXT"].id
+    private_ip_address            = var.fw_floating_interfaces["${var.prefix}_EXT"].v4_IP 
+    private_ip_address_allocation = "Static"
+    private_ip_address_version    = "IPv4"
+  }
+
+  frontend_ip_configuration {
+    name                          = "${var.prefix}_EXT_FE_IPv6"
+    subnet_id                     = azurerm_subnet.this["${var.prefix}_EXT"].id
+    private_ip_address            = var.fw_floating_interfaces["${var.prefix}_EXT"].v6_IP 
+    private_ip_address_allocation = "Static"
+    private_ip_address_version    = "IPv6"
+  }
+
+}
+
+#--------------------------------------------------------------------------------
+# EXT v4 pool and backends
+
+resource "azurerm_lb_backend_address_pool" "ext-v4" {
+  loadbalancer_id     = azurerm_lb.ext.id
+  name                = "${var.prefix}_EXT_BE_Pool"
+  virtual_network_id  = azurerm_virtual_network.this.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw1-ext-v4" {
+  network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_EXT"].id
+  ip_configuration_name   = "${var.prefix}_fw1_EXT_v4"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ext-v4.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw2-ext-v4" {
+  network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw2_EXT"].id
+  ip_configuration_name   = "${var.prefix}_fw2_EXT_v4"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ext-v4.id
+}
+
+#--------------------------------------------------------------------------------
+# EXT v6 pool and backends
+
+resource "azurerm_lb_backend_address_pool" "ext-v6" {
+  loadbalancer_id     = azurerm_lb.ext.id
+  name                = "${var.prefix}_EXT_BE_Pool"
+  virtual_network_id  = azurerm_virtual_network.this.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw1-ext-v6" {
+  network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw1_EXT"].id
+  ip_configuration_name   = "${var.prefix}_fw1_EXT_v6"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ext-v6.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "fw2-ext-v6" {
+  network_interface_id    = azurerm_network_interface.fw1_int["${var.prefix}_fw2_EXT"].id
+  ip_configuration_name   = "${var.prefix}_fw2_EXT_v6"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.ext-v6.id
+}
+
+
+
+#--------------------------------------------------------------------------------
+# EXT v4 rule
+
+resource "azurerm_lb_rule" "ext-v4" {
+  loadbalancer_id                 = azurerm_lb.ext.id
+  name                            = "${var.prefix}_EXT_v4_rule"
+  protocol                        = "All"
+  frontend_port                   = 0
+  backend_port                    = 0
+  frontend_ip_configuration_name  = "${var.prefix}_EXT_FE_IPv4"
+  backend_address_pool_ids        = azurerm_lb_backend_address_pool.ext-v4.id
+  idle_timeout_in_minutes         = local.lb_idle_timeout
+}
+
+#--------------------------------------------------------------------------------
+# EXT v6 rule
+
+resource "azurerm_lb_rule" "ext-v4" {
+  loadbalancer_id                 = azurerm_lb.ext.id
+  name                            = "${var.prefix}_EXT_v6_rule"
+  protocol                        = "All"
+  frontend_port                   = 0
+  backend_port                    = 0
+  frontend_ip_configuration_name  = "${var.prefix}_EXT_FE_IPv6"
+  backend_address_pool_ids        = azurerm_lb_backend_address_pool.ext-v4.id
+  idle_timeout_in_minutes         = local.lb_idle_timeout
+  tcp_reset_enabled               = local.tcp_reset_enabled
+}
+
+
+
+
+#--------------------------------------------------------------------------------
+# EXT v4 probe
+
+resource "azurerm_lb_probe" "example" {
+  loadbalancer_id     = azurerm_lb.ext.id
+  name                = "${var.prefix}_EXT_probe"
+  protocol            = local.lb_probe_protocol
+  port                = local.lb_probe_port
+  interval_in_seconds = local.lb_probe_interval
+}
+
+
+
+
+
+*/

@@ -64,11 +64,24 @@ variable "mgmt_nsg" {
 variable "spoke_routes_v4" {
     type = list(string)
     description = "List of IPv4 spoke CIDRs for region"
-}
+ }
 
 variable "spoke_routes_v6" {
     type = list(string)
-    description = "List of IPv6 Spoke CIDRs for region"
+    description = "List of IPv6 Spoke CIDRs for region"    
+}
+
+
+variable "peer_routes_v4" {
+    type = map(string)
+    description = "Map of routes to next-hop for peered hubs in other regions"
+    default = { null = null }
+}
+
+variable "peer_routes_v6" {
+    type = map(string)
+    description = "Map of routes to next-hop for peered hubs in other regions"
+    default = { null = null }
 }
 
 variable "hub_bastion_v4" {
