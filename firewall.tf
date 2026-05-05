@@ -500,6 +500,7 @@ resource "azurerm_lb_rule" "rule-v4" {
     backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v4[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
+    probe_id                        = azurerm_lb_probe.fw[each.key].id
 }
 
 #--------------------------------------------------------------------------------
@@ -516,6 +517,7 @@ resource "azurerm_lb_rule" "rule-v6" {
     backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v6[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
+    probe_id                        = azurerm_lb_probe.fw[each.key].id
 }
 
 
