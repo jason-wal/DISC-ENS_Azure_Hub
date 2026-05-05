@@ -475,7 +475,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw1-v6" {
   for_each = var.fw_floating_interfaces
     network_interface_id    = azurerm_network_interface.fw1_int[each.key].id
     ip_configuration_name   = "${var.prefix}_fw1_${each.key}_v6"
-    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
+    backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v6[each.key].id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
