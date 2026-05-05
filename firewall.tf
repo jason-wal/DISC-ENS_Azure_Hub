@@ -435,6 +435,8 @@ resource "azurerm_lb" "fw" {
       private_ip_address_version    = "IPv6"
     }
 
+    tags                = var.tags
+
 }
 
 #--------------------------------------------------------------------------------
