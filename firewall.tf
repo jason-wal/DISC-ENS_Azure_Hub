@@ -489,6 +489,7 @@ resource "azurerm_lb_backend_address_pool" "pool-v6" {
 #    virtual_network_id  = azurerm_virtual_network.this.id
 }
 
+/*
 resource "azurerm_network_interface_backend_address_pool_association" "fw1-v6" {
   for_each = var.fw_floating_interfaces
     network_interface_id    = azurerm_network_interface.fw1_int[each.key].id
@@ -502,6 +503,30 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
     ip_configuration_name   = "${var.prefix}_fw2_${each.key}_v6"
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v6[each.key].id
 }
+
+*/
+
+
+
+resource "azurerm_lb_backend_address_pool_address" "fw1-v6" {
+  for_each = var.fw_floating_interfaces
+    name                                = "${var.prefix}_fw1_${each.key}_v6"
+    ip_address                          = var.fw1_interfaces[each.key].v6_IP
+    backend_address_pool_id             = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+
+}
+
+resource "azurerm_lb_backend_address_pool_address" "fw2-v6" {
+  for_each = var.fw_floating_interfaces
+    name                                = "${var.prefix}_fw2_${each.key}_v6"
+    ip_address                          = var.fw2_interfaces[each.key].v6_IP
+    backend_address_pool_id             = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+
+}
+
+
+
+
 
 
 #--------------------------------------------------------------------------------
@@ -576,9 +601,11 @@ resource "azurerm_lb_probe" "fw-v6" {
 #--------------------------------------------------------------------------------
 # Load balancer
 
-resource "azurerm_lb" "fw" {
+
+
+resource "azurerm_lb" "fw-v4" {
   for_each = var.fw_floating_interfaces
-    name                = "${var.prefix}_${each.key}_LB"
+    name                = "${var.prefix}_${each.key}_LB-v4"
     location            = var.az_reg
     resource_group_name = azurerm_resource_group.fw_rsg.name
     sku                 = "Standard"
@@ -592,6 +619,18 @@ resource "azurerm_lb" "fw" {
       private_ip_address_version    = "IPv4"
     }
 
+    tags                = var.tags
+
+}
+
+resource "azurerm_lb" "fw-v6" {
+  for_each = var.fw_floating_interfaces
+    name                = "${var.prefix}_${each.key}_LB-v6"
+    location            = var.az_reg
+    resource_group_name = azurerm_resource_group.fw_rsg.name
+    sku                 = "Standard"
+    sku_tier            = "Regional"
+
     frontend_ip_configuration {
       name                          = "${var.prefix}_${each.key}_FE_IPv6"
       subnet_id                     = azurerm_subnet.this["${var.prefix}_${each.key}"].id
@@ -604,12 +643,15 @@ resource "azurerm_lb" "fw" {
 
 }
 
+
+
+
 #--------------------------------------------------------------------------------
 # v4 pool and backends
 
 resource "azurerm_lb_backend_address_pool" "pool-v4" {
   for_each = var.fw_floating_interfaces
-    loadbalancer_id     = azurerm_lb.fw[each.key].id
+    loadbalancer_id     = azurerm_lb.fw-v4[each.key].id
     name                = "${var.prefix}_${each.key}_BE_Pool-v4"
 #    virtual_network_id  = azurerm_virtual_network.this.id
 }
@@ -633,7 +675,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw2-v4" {
 
 resource "azurerm_lb_backend_address_pool" "pool-v6" {
   for_each = var.fw_floating_interfaces
-    loadbalancer_id     = azurerm_lb.fw[each.key].id
+    loadbalancer_id     = azurerm_lb.fw-v6[each.key].id
     name                = "${var.prefix}_${each.key}_BE_Pool-v6"
 #    virtual_network_id  = azurerm_virtual_network.this.id
 }
@@ -658,7 +700,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
 
 resource "azurerm_lb_rule" "rule-v4" {
   for_each = var.fw_floating_interfaces
-    loadbalancer_id                 = azurerm_lb.fw[each.key].id
+    loadbalancer_id                 = azurerm_lb.fw-v4[each.key].id
     name                            = "${var.prefix}_${each.key}_v4_rule"
     protocol                        = "All"
     frontend_port                   = "0"
@@ -667,7 +709,7 @@ resource "azurerm_lb_rule" "rule-v4" {
     backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v4[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
-    probe_id                        = azurerm_lb_probe.fw[each.key].id
+    probe_id                        = azurerm_lb_probe.fw-v4[each.key].id
 }
 
 #--------------------------------------------------------------------------------
@@ -675,7 +717,7 @@ resource "azurerm_lb_rule" "rule-v4" {
 
 resource "azurerm_lb_rule" "rule-v6" {
   for_each = var.fw_floating_interfaces
-    loadbalancer_id                 = azurerm_lb.fw[each.key].id
+    loadbalancer_id                 = azurerm_lb.fw-v6[each.key].id
     name                            = "${var.prefix}_${each.key}_v6_rule"
     protocol                        = "All"
     frontend_port                   = "0"
@@ -684,7 +726,7 @@ resource "azurerm_lb_rule" "rule-v6" {
     backend_address_pool_ids        = [ azurerm_lb_backend_address_pool.pool-v6[each.key].id ]
     idle_timeout_in_minutes         = local.lb_idle_timeout
     tcp_reset_enabled               = local.tcp_reset_enabled
-    probe_id                        = azurerm_lb_probe.fw[each.key].id
+    probe_id                        = azurerm_lb_probe.fw-v6[each.key].id
 }
 
 
@@ -693,10 +735,21 @@ resource "azurerm_lb_rule" "rule-v6" {
 #--------------------------------------------------------------------------------
 # LB probe
 
-resource "azurerm_lb_probe" "fw" {
+resource "azurerm_lb_probe" "fw-v4" {
   for_each = var.fw_floating_interfaces
-    loadbalancer_id     = azurerm_lb.fw[each.key].id
-    name                = "${var.prefix}_${each.key}_probe"
+    loadbalancer_id     = azurerm_lb.fw-v4[each.key].id
+    name                = "${var.prefix}_${each.key}_probe_v4"
+    protocol            = local.lb_probe_protocol
+    port                = local.lb_probe_port
+    interval_in_seconds = local.lb_probe_interval
+    number_of_probes    = local.lb_probe_count
+    
+}
+
+resource "azurerm_lb_probe" "fw-v6" {
+  for_each = var.fw_floating_interfaces
+    loadbalancer_id     = azurerm_lb.fw-v6[each.key].id
+    name                = "${var.prefix}_${each.key}_probe_v6"
     protocol            = local.lb_probe_protocol
     port                = local.lb_probe_port
     interval_in_seconds = local.lb_probe_interval
