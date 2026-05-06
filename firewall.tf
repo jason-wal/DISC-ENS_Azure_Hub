@@ -486,7 +486,8 @@ resource "azurerm_lb_backend_address_pool" "pool-v6" {
   for_each = var.fw_floating_interfaces
     loadbalancer_id     = azurerm_lb.fw-v6[each.key].id
     name                = "${var.prefix}_${each.key}_BE_Pool-v6"
-#    virtual_network_id  = azurerm_virtual_network.this.id
+    synchronous_mode    = "Automatic"
+    virtual_network_id  = azurerm_virtual_network.this.id
 }
 
 /*
