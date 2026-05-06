@@ -514,6 +514,7 @@ resource "azurerm_lb_backend_address_pool_address" "fw1-v6" {
     name                                = "${var.prefix}_fw1_${each.key}_v6"
     ip_address                          = var.fw1_interfaces[each.key].v6_IP
     backend_address_pool_id             = azurerm_lb_backend_address_pool.pool-v6[each.key].id
+    virtual_network_id                  = azurerm_virtual_network.this.id
 
 }
 
