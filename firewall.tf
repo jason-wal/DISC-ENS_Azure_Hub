@@ -509,6 +509,10 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw2-v6" {
 
 
 
+
+
+/*
+
 resource "azurerm_lb_backend_address_pool_address" "fw1-v6" {
   for_each = var.fw_floating_interfaces
     name                                = "${var.prefix}_fw1_${each.key}_v6"
@@ -527,7 +531,7 @@ resource "azurerm_lb_backend_address_pool_address" "fw2-v6" {
 
 }
 
-
+*/
 
 
 
