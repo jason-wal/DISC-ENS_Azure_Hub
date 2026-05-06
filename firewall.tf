@@ -410,7 +410,7 @@ resource "azurerm_linux_virtual_machine" "fw2" {
 
 
 #--------------------------------------------------------------------------------
-# Load balancers
+# LB IPv4
 
 resource "azurerm_lb" "fw-v4" {
   for_each = var.fw_floating_interfaces
@@ -456,7 +456,6 @@ resource "azurerm_network_interface_backend_address_pool_association" "fw2-v4" {
     backend_address_pool_id = azurerm_lb_backend_address_pool.pool-v4[each.key].id
 }
 
-
 #--------------------------------------------------------------------------------
 # LB v4 rule
 
@@ -474,8 +473,6 @@ resource "azurerm_lb_rule" "rule-v4" {
     probe_id                        = azurerm_lb_probe.fw-v4[each.key].id
 }
 
-
-
 #--------------------------------------------------------------------------------
 # LB probe v4
 
@@ -490,11 +487,7 @@ resource "azurerm_lb_probe" "fw-v4" {
     
 }
 
-
-
-
-
-
+#--------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 # LB v6 
 
@@ -518,16 +511,8 @@ resource "azurerm_lb" "fw-v6" {
 
 }
 
-
-
-
-
-
 #--------------------------------------------------------------------------------
 # LB v6 pool and backends
-
-
-/*
 
 resource "azurerm_lb_backend_address_pool" "pool-v6" {
   for_each = var.fw_floating_interfaces
@@ -557,10 +542,6 @@ resource "azurerm_lb_backend_address_pool_address" "fw2-v6" {
 
 }
 
-
-
-
-
 #--------------------------------------------------------------------------------
 # LB v6 rule
 
@@ -578,11 +559,6 @@ resource "azurerm_lb_rule" "rule-v6" {
     probe_id                        = azurerm_lb_probe.fw-v6[each.key].id
 }
 
-
-
-
-
-
 #--------------------------------------------------------------------------------
 # LB probe v6
 
@@ -596,7 +572,7 @@ resource "azurerm_lb_probe" "fw-v6" {
     number_of_probes    = local.lb_probe_count
     
 }
-*/
+
 
 
 
