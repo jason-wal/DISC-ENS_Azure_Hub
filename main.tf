@@ -78,11 +78,78 @@ resource "azurerm_network_security_rule" "bastion_rule" {
 
 
 
+#
+#---------------------------------------------------------
+# Create NSG for FW Interface Subnets
+#-------------------------------------------------------------
+#
 
 
 
+resource "azurerm_network_security_group" "fw-subs" {
+  name                = "${var.prefix}_fw_NSG"
+  location            = azurerm_resource_group.hub.location
+  resource_group_name = azurerm_resource_group.hub.name
+  tags                = var.tags
+}
 
 
+
+resource "azurerm_network_security_rule" "fw-any-in" {
+    name                          = "Any-IN"
+    priority                      = 100
+    direction                     = "Inbound"
+    access                        = "Allow"
+    protocol                      = "*"
+    source_port_range             = "*"
+    destination_port_range        = "*"
+    source_address_prefix         = "*"
+    destination_address_prefix    = "*"
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.fw-subs.name
+}
+
+resource "azurerm_network_security_rule" "fw-any-icmp-in" {
+    name                          = "Any-ICMP-IN"
+    priority                      = 110
+    direction                     = "Inbound"
+    access                        = "Allow"
+    protocol                      = "Icmp"
+    source_port_range             = "*"
+    destination_port_range        = "*"
+    source_address_prefix         = "*"
+    destination_address_prefix    = "*"
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.fw-subs.name
+}
+
+resource "azurerm_network_security_rule" "fw-any-out" {
+    name                          = "Any-Out"
+    priority                      = 100
+    direction                     = "Outbound"
+    access                        = "Allow"
+    protocol                      = "*"
+    source_port_range             = "*"
+    destination_port_range        = "*"
+    source_address_prefix         = "*"
+    destination_address_prefix    = "*"
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.fw-subs.name
+}
+
+resource "azurerm_network_security_rule" "fw-any-icmp-out" {
+    name                          = "Any-ICMP-Out"
+    priority                      = 110
+    direction                     = "Outbound"
+    access                        = "Allow"
+    protocol                      = "Icmp"
+    source_port_range             = "*"
+    destination_port_range        = "*"
+    source_address_prefix         = "*"
+    destination_address_prefix    = "*"
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.fw-subs.name
+}
 
 
 
@@ -254,10 +321,6 @@ resource "azurerm_subnet_route_table_association" "this" {
 
 
 
-
-
-
-
 #
 #---------------------------------------------------------
 # Associate NSG to Bastion Subnet
@@ -270,9 +333,20 @@ resource "azurerm_subnet_network_security_group_association" "bastion" {
 }
 
 
+#
+#---------------------------------------------------------
+# Associate NSG's to FW interface Subnets
+#-------------------------------------------------------------
+#
 
-
-
+resource "azurerm_subnet_network_security_group_association" "fw-subs" {
+  for_each = {
+    for key,value in var.hub_subnets : key => value 
+    if alltrue( [ !contains([key], "${var.prefix}_Bastion"),  !contains([key], "GatewaySubnet"), ] )
+  }
+    subnet_id                 = azurerm_subnet.this[each.key].id
+    network_security_group_id = azurerm_network_security_group.fw-subs.id
+}
 
 
 
