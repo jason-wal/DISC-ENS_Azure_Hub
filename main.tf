@@ -183,9 +183,9 @@ resource "azurerm_route" "hub_v6" {
 }
 */
 
-resource "azurerm_route" "spoke_v4" {
+resource "azurerm_route" "local_v4" {
   for_each = {
-    for i in var.spoke_routes_v4 : replace( i ,"/", "-" ) => i
+    for i in var.local_routes_v4 : replace( i ,"/", "-" ) => i
   }
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name
@@ -195,9 +195,9 @@ resource "azurerm_route" "spoke_v4" {
     next_hop_in_ip_address  = var.fw_floating_interfaces["EXT"].v4_IP
 }
 
-resource "azurerm_route" "spoke_v6" {
+resource "azurerm_route" "local_v6" {
   for_each = {
-    for i in var.spoke_routes_v6 : replace(replace( i ,"/", "-" ),":", "." )=> i
+    for i in var.local_routes_v6 : replace(replace( i ,"/", "-" ),":", "." )=> i
   }
     name                    = each.key
     resource_group_name     = azurerm_resource_group.hub.name

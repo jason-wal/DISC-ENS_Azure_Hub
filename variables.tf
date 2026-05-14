@@ -61,12 +61,12 @@ variable "mgmt_nsg" {
 
 
 
-variable "spoke_routes_v4" {
+variable "local_routes_v4" {
     type = list(string)
     description = "List of IPv4 spoke CIDRs for region"
  }
 
-variable "spoke_routes_v6" {
+variable "local_routes_v6" {
     type = list(string)
     description = "List of IPv6 Spoke CIDRs for region"    
 }
