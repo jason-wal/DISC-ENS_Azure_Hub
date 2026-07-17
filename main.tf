@@ -97,7 +97,7 @@ resource "azurerm_network_security_group" "fw-subs" {
 
 resource "azurerm_network_security_rule" "fw-any-in" {
     name                          = "Any-IN"
-    priority                      = 100
+    priority                      = 120
     direction                     = "Inbound"
     access                        = "Allow"
     protocol                      = "*"
