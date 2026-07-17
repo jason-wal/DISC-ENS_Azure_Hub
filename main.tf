@@ -94,6 +94,21 @@ resource "azurerm_network_security_group" "fw-subs" {
 }
 
 
+resource "azurerm_network_security_rule" "DENY-TCP-53-IPv6-IN" {
+    name                          = "DENY-TCP-53-IPv6-IN"
+    priority                      = 106
+    direction                     = "Inbound"
+    access                        = "Deny"
+    protocol                      = "Tcp"
+    source_port_range             = "*"
+    destination_port_range        = "53"
+    source_address_prefix         = "*"
+    destination_address_prefix    = var.hub_cidrs_v6["Primary_v6"]
+    resource_group_name           = azurerm_resource_group.hub.name
+    network_security_group_name   = azurerm_network_security_group.fw-subs.name
+}
+
+
 
 resource "azurerm_network_security_rule" "fw-any-in" {
     name                          = "Any-IN"
